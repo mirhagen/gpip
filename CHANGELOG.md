@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.0
+
+* Added package `ip`. This exports the function `Resolve()` which will check `r *http.Request`
+for the headers: `Forwarded`, `X-Forwarded-For` and `X-Real-IP`. Replaces old `utils.go`.
+
 ## v1.0.1
 
 ### Fixes

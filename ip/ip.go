@@ -1,4 +1,4 @@
-package server
+package ip
 
 import (
 	"net/http"
@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-// remoteIPAddress parses incoming request and looks for header
-// Forwarded, X-Forwarded-For or X-Real-IP and if none of those exists
-// uses RemoteAddr.
-func remoteIPAddress(r *http.Request) string {
+// Resolve parses incoming request and resolves real IP
+// by looking for headers Forwarded, X-Forwarded-For or
+// X-Real-IP and if none of thos exists uses RemoteAddr.
+func Resolve(r *http.Request) string {
 	var rAddr string
 	if len(r.Header.Get("forwarded")) > 0 {
 		rAddr = forwardedFor(r.Header.Get("forwarded"))[0]
 	} else if len(r.Header.Get("x-forwarded-for")) > 0 {
-		rAddr = headerValues(r.Header.Get("x-forwarded-for"))[0]
+		rAddr = strings.Split(strings.Replace(r.Header.Get("x-forwarded-for"), " ", "", -1), ",")[0]
 	} else if len(r.Header.Get("x-real-ip")) > 0 {
 		rAddr = r.Header.Get("x-real-ip")
 	} else {
@@ -24,13 +24,6 @@ func remoteIPAddress(r *http.Request) string {
 	reg := regexp.MustCompile(`:\d+$`)
 	ip := reg.ReplaceAllLiteralString(rAddr, "")
 	return ip
-}
-
-// headerValues takes a header string and returns
-// a slice containing the previously comma separated
-// values.
-func headerValues(header string) []string {
-	return strings.Split(strings.Replace(header, " ", "", -1), ",")
 }
 
 // forwardedFor parses the content from a Forwarded header.
