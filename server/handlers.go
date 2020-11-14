@@ -19,13 +19,15 @@ func (s *Server) getIP() http.Handler {
 			return
 		}
 		// Check accept header.
-		contentType := strings.Split(strings.Replace(r.Header.Get("accept"), " ", "", -1), ",")[0]
+		contentType := "application/json"
+		accepts := strings.Split(strings.Replace(r.Header.Get("accept"), " ", "", -1), ",")[0]
 		var response func(w http.ResponseWriter, s string)
-		switch contentType {
+		switch accepts {
 		case "application/json", "*/*", "":
 			response = jsonResponse
 		case "text/plain":
 			response = textResponse
+			contentType = accepts
 		default:
 			w.WriteHeader(http.StatusUnsupportedMediaType)
 			return

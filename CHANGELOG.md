@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.1
+
+### Fixes
+
+* Correctly returns header `Content-Type: application/json; charset=UTF-8` when `Accept` is not provided or `Accept: */*`.
+
 ## v1.1.0
 
 * Added package `ip`. This exports the function `Resolve()` which will check `r *http.Request`
