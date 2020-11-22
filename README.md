@@ -1,5 +1,7 @@
 # gpip
 
+![Test](https://github.com/RedeployAB/gpip/workflows/Test/badge.svg)
+
 > HTTP service that returns callers IP address
 
 `gpip` is a service to be used for returning callers IP address.
