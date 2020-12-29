@@ -17,6 +17,7 @@ before falling back to incoming remote address.
 * [Configuration](#configuration)
 * [Build](#build)
 * [Deployment](#deployment)
+  * [Kubernetes](#kubernetes)
 * [Additional credits](#additional-credits)
 
 
@@ -84,7 +85,38 @@ Syntax:
 * Azure WebApp for Containers
 
 Any platform that can pass on source ip, either through the use of headers `Forwarded`, `X-Forwarded-For`, `X-Real-IP`,
-or some other form of manupilating the remote address of the request will do.
+or some other form of manipulating the remote address of the request will do.
+
+### Kubernetes
+
+Manifests for kubernetes deployment (deployment, service and ingress) are provided in the repository. The manifests can be found in `deployments/kubernetes`.
+
+This setup assumes an ingress controller, like `ingress-nginx` is deployed already.
+
+```sh
+kubectl create namespace gpip
+
+kubectl apply -f deployments/kubernetes/deployment.yaml -n gpip
+kubectl apply -f deployments/kubernetes/service.yaml -n gpip
+# Assuming an ingress controller like ingress-nginx is deployed.
+kubectl apply -f deployments/kubernetes/ingress.yaml -n gpip
+```
+
+As an example, to install the `ingress-nginx` ingress controller do the following:
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+# The option --set controller.service.externalTrafficPolicy=Local
+# ensures that client IP will be forwarded.
+helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --namespace <namespace> \
+    --set controller.replicaCount=2 \
+    --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+    --set controller.service.externalTrafficPolicy=Local
+```
+
+If not an ingress controller will be used, but instead the service `.spec.type` is set to `LoadBalancer`, the service `.spec.externalTrafficPolicy` must be set to `Local` to forward the client IP properly.
 
 ## Additional credits
 
