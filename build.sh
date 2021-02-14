@@ -55,14 +55,13 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-bin_full_name=$BIN-$VERSION-$OS-$ARCH
-
-mkdir -p release
-GOOS=$OS GOARCH=$ARCH go build -o release/$bin_full_name -ldflags="-w -s" -trimpath cmd/gpip/main.go
-
 if [[ $CONTAINER -eq 1 && "$OS" == "linux" ]]; then
-  mkdir -p release/bin/$OS
-  cp release/$bin_full_name release/bin/$OS/$BIN
   docker build -t $BIN:$VERSION --build-arg VERSION=$VERSION .
   docker image prune -f
+else
+  bin_full_name=$BIN-$VERSION-$OS-$ARCH
+  mkdir -p release
+  GOOS=$OS GOARCH=$ARCH go build -o release/$bin_full_name -ldflags="-w -s" -trimpath cmd/gpip/main.go
+  mkdir -p release/bin/$OS
+  cp release/$bin_full_name release/bin/$OS/$BIN
 fi

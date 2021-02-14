@@ -14,6 +14,12 @@ RUN adduser \
     --uid "${UID}" \
     "${USER}"
 
+WORKDIR $GOPATH/src/gpip
+COPY . .
+
+# Build the binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/gpip -ldflags="-w -s" -trimpath cmd/gpip/main.go
+
 # Build final image.
 FROM scratch
 # Set port and version.
@@ -26,7 +32,7 @@ ENV GPIP_VERSION=${VERSION}
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
-COPY release/bin/linux/gpip /usr/bin/gpip
+COPY --from=builder /go/bin/gpip /usr/bin/gpip
 
 EXPOSE ${PORT}
 
