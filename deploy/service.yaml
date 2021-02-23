@@ -4,6 +4,7 @@ metadata:
   creationTimestamp: "2021-02-16T18:41:46Z"
   labels:
     app: gpip
+    flux: test
   name: gpip
   namespace: gpip
 spec:
