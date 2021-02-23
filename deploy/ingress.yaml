@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gpip
+  namespace: gpip
+spec:
+  rules:
+  - host: gpip.20.71.76.213.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: gpip
+          servicePort: 80
+        path: /
+        pathType: Exact
